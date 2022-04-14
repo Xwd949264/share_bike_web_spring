@@ -1,0 +1,68 @@
+/*
+    页面核心样式定义
+ */
+/*头部背景色*/
+.layui-layout-admin .layui-header{
+    background-color: #FAFAFA !important;
+}
+
+.layui-side{
+    border-right: 1px solid #ccc;
+    box-shadow:0 8px 8px 0 rgba(0,0,0,0.2),0 10px 10px 0 rgba(0,0,0,0.19);
+}
+
+/*修改侧边菜单字体颜色*/
+.layui-nav .layui-nav-item a{
+    color: #0C0C0C;
+}
+.layui-nav-itemed > a{
+    color: #0C0C0C !important;
+}
+.layui-nav-tree .layui-nav-child a{
+    color: #0C0C0C;
+}
+.layui-nav .layui-nav-item a{
+    color: #0C0C0C;
+}
+/*背景颜色*/
+.layui-nav-itemed > .layui-nav-child{
+    background-color: #FFF !important;
+}
+
+.layui-nav{
+    background-color: #FFF;
+}
+
+/*hover鼠标事件*/
+.layui-nav-tree .layui-nav-child a:hover,
+.layui-nav .layui-nav-item a:hover{
+    color: #0C0C0C;
+    background-color: #009688;
+}
+/*底部边框*/
+.layui-footer{
+    border-top: 1px solid #ccc;
+}
+
+/*退出登录按钮样式*/
+.logout-menu{
+    padding: 5px 20px;
+    position: absolute;
+    bottom: 0px;
+    width: 160px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: 5px;
+    border-top: 1px solid #ccc;
+    cursor: pointer;
+}
+.logout-menu a:hover{
+    color: #0C0C0C;
+}
+
+.logout-menu:hover{
+    color: #FFF;
+    background-color: #009688;
+}

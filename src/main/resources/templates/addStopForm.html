@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>添加停车区域</title>
+    <!--引入Layui-->
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/addstopform.css">
+</head>
+<body>
+<div class="layui-container">
+    <form class="layui-form"  action="" lay-filter="addStops">
+        <div class="layui-form-item">
+            <label class="layui-form-label">编号</label>
+            <div class="layui-input-block">
+                <input type="text" name="stopno" required lay-verify="required" placeholder="请输入停车区编号" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="stopname" required lay-verify="required" placeholder="请输入停车区名称" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">最大容量</label>
+            <div class="layui-input-block">
+                <select name="capacity" required lay-verify="required">
+                    <option value=""></option>
+                    <option value="25">25辆</option>
+                    <option value="50">50辆</option>
+                    <option value="75">75辆</option>
+                    <option value="100">100辆</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">投放日期</label>
+            <div class="layui-input-block">
+                <input type="text" name="startdate" required lay-verify="required" class="layui-input" id="startdate" placeholder="yyyy-MM-dd">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">所在区域</label>
+            <div class="layui-input-inline">
+                <select name="province">
+                    <option value="">省份</option>
+                    <option value="江苏" selected="">江苏省</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="city" id="city-select">
+                    <option value="">请选择市</option>
+                    <option value="南京市">南京市</option>
+                    <option value="无锡市">无锡市</option>
+                    <option value="徐州市">徐州市</option>
+                    <option value="常州市">常州市</option>
+                    <option value="苏州市">苏州市</option>
+                    <option value="南通市">南通市</option>
+                    <option value="连云港">连云港市</option>
+                    <option value="淮安市">淮安市</option>
+                    <option value="盐城市">盐城市</option>
+                    <option value="扬州市">扬州市</option>
+                    <option value="镇江市">镇江市</option>
+                    <option value="泰州市">泰州市</option>
+                    <option value="宿迁市">宿迁市</option>
+                </select>
+            </div>
+            <a class="add-advice-icon" id="advice-icon" title="获取位置建议" href="javascript:void(0)">
+                <i class="layui-icon layui-icon-help"></i>
+            </a>
+        </div>
+        <div class="layui-form-item coordinate-input">
+            <div class=" layui-form-item">
+                <label class="layui-form-label">东北角坐标</label>
+                <div class="layui-input-block">
+                    <input type="text" required lay-verify="required" disabled id="northeast" name="northease" placeholder="东北角坐标"  class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">西南角坐标</label>
+                <div class="layui-input-block">
+                    <input type="text" required lay-verify="required" disabled id="southwest" name="southwest" placeholder="西南角坐标"  class="layui-input">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">区域定义</label>
+            <div class="layui-input-block">
+                <textarea name="geojson" required lay-verify="required" id="stopdefine" placeholder="请输入停车区域定义" class="layui-textarea"></textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="addStops">立即添加</button>
+                <button id="cancelAddStop" class="layui-btn layui-btn-primary">取消添加</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="/layui/layui.js"></script>
+<script src="/js/uuid/uuid.js"></script>
+<script src="/js/terraformer.js"></script>
+<script src="/js/terraformer-wkt-parser.min.js"></script>
+<script>
+    layui.use(['form','laydate'], function () {
+        var form = layui.form,
+            laydate=layui.laydate;
+            $=layui.jquery;
+        //生成编号
+        form.val("addStops",{
+            stopno:UUID.generate(),
+        })
+        //渲染日期
+        laydate.render({
+            elem:"#startdate",//日期选择器的id值
+            format:"yyyy-MM-dd HH:mm:ss",//格式
+            value:new Date(),//初始填充值
+            isInitValue:true,//是否允许自动填充初始值
+        })
+        //取消添加按钮
+        $("#cancelAddStop").on("click",function (){
+            layer.msg("已取消本次添加操作!");
+            //关闭弹出窗口
+            setTimeout(function (){
+                //当你在iframe页面关闭自身时——固定写法
+                let index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                // console.log(index)
+                parent.layer.close(index); //再执行关闭
+            },1000);
+        })
+        //获取选择建议
+        $("#advice-icon").on("click",function (){
+            let geometry = form.val("addStops").geojson;
+            console.log(geometry)
+            $.ajax({
+                url:"http://localhost:8011/stop/add/stop/advice",
+                method:"POST",
+                data:{
+                    geom:geometry,
+                },
+                success:function (res){
+                    if (res&&res.code==1){
+                        layer.msg("建议城市选项:"+res.data+",如有偏差,请手动纠正");
+                    }else {
+                        layer.msg("系统异常,获取建议失败!");
+                    }
+                },
+                error:function (){
+                    layer.msg("系统异常,获取建议失败!");
+                }
+            })
+        })
+        //监听提交
+        form.on('submit(addStops)', function (data) {
+            // layer.msg(JSON.stringify(data.field));
+            let stopForm = data.field;
+            // console.log(Terraformer.WKT.convert(JSON.parse(stopForm.geojson)))
+            $.ajax({
+                url:"http://localhost:8011/stop/add/stop",
+                method:"POST",
+                contentType: "application/json;charset=UTF-8",
+                data:JSON.stringify({
+                    stopno:stopForm.stopno,
+                    stopname:stopForm.stopname,
+                    builddate:stopForm.startdate,
+                    capacity:stopForm.capacity,
+                    size:0,
+                    belong:stopForm.city,
+                    geom:JSON.parse(stopForm.geojson),
+                }),
+                success:function (result){
+                    // console.log(result)
+                    if (result){
+                        switch (result.code){
+                            case 0:{
+                                //获取失败
+                                layer.msg(result.msg);
+                                break;
+                            }
+                            case 1:{
+                                //获取成功
+                                layer.msg(result.msg);
+                                break;
+                            }
+                            default:{
+                                layer.msg("系统异常");
+                            }
+                        }
+                        //关闭弹出窗口
+                        setTimeout(function (){
+                            //当你在iframe页面关闭自身时——固定写法
+                            let index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            // console.log(index)
+                            parent.layer.close(index); //再执行关闭
+                        },2000);
+                    }
+                }
+            })
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

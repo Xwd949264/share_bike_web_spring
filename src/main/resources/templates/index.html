@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Share_Bike-主页</title>
+    <!--引入Layui-->
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <!--引入css样式-->
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/core-style.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <script type="text/javascript" src="/js/jquery/jquery-3.6.0.min.js"></script>
+    <!--引入leaflet资源-->
+    <link rel="stylesheet" href="/leaflet/leaflet.css">
+    <link rel="stylesheet" href="/leaflet/leafletdraw/leaflet.draw.css">
+    <link rel="stylesheet" href="/leaflet/leafletContextmenu/leaflet.contextmenu.min.css">
+    <script type="text/javascript" src="/leaflet/leaflet.js"></script>
+    <script type="text/javascript" src="/leaflet/leaflet.ChineseTmsProvider.js"></script>
+
+</head>
+<body>
+
+<hr/>
+<div class="layui-layout layui-layout-admin">
+    <!--头部-->
+    <header class="layui-header"><p class="header-title">共享单车智能管理系统</p></header>
+    <div class="layui-side">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="menu">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">停车点管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;" lay-filter="addStops">增设停车区域</a></dd>
+                        <dd><a href="javascript:;" lay-filter="queryStops">查询停车区域</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item"><a href="javascript:;" lay-filter="locateBike">单车定位查询</a></li>
+                <li class="layui-nav-item"><a href="javascript:;" lay-filter="queryBroken">损坏车辆查询</a></li>
+                <li class="layui-nav-item"><a href="javascript:;" lay-filter="userManager">系统用户管理</a></li>
+            </ul>
+            <li class="layui-nav-item logout-menu">
+                <i class="layui-icon layui-icon-username layui-bg-green" style="font-size: 30px; "></i>
+                <a href="javascript:;" id="btnLogonOut">退出登录</a></li>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!--图标-->
+        <span class="location-icon" id="locate_control" title="快速定位">
+            <i class="layui-icon layui-icon-location" style="font-weight:700; font-size: 24px;color: #ff7494;"></i>
+        </span>
+        <span class="hideLayer-icon" id="hideLayer_control" title="隐藏图层">
+            <i class="layui-icon layui-icon-menu-fill"
+               style="font-weight:700; font-size: 24px;color: rgba(98,103,128,0.98);"></i>
+        </span>
+        <span class="switchLayer-icon" id="switchLayer_control" title="切换图层">
+            <i class="layui-icon layui-icon-template-1" style="font-weight:700; font-size: 24px;color: #4fff4b;"></i>
+        </span>
+        <span class="resetView-icon" id="resetView_control" title="还原视图">
+            <i class="layui-icon layui-icon-screen-full" style="font-weight:700; font-size: 24px;color: #2c6eff;"></i>
+        </span>
+        <span class="refreshLayers-icon" id="refreshLayers_control" title="刷新图层">
+            <i class="layui-icon layui-icon-refresh" style="font-weight:700; font-size: 24px;color: #2c6eff;"></i>
+        </span>
+        <!-- 内容主体区域 -->
+        <div id="map">
+            <div id="bike_type_chart"></div>
+        </div>
+    </div>
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        (经度=<span id="lng">00.0000</span>,纬度=<span id="lat">00.0000</span>)&nbsp;&nbsp;&nbsp;&nbsp;zoom-level:<span
+            id="zoom_level">8</span>
+    </div>
+</div>
+<script src="/layui/layui.js"></script>
+<script src="/leaflet/leafletdraw/leaflet.draw.js"></script>
+<script src="/leaflet/leafletContextmenu/leaflet.contextmenu.min.js"></script>
+<script src="/js/jangsu.js"></script>
+<script src="/js/modules/index.js"></script>
+<script src="/js/modules/laymap.js"></script>
+<script src="/echarts/echarts.js"></script>
+<script>
+
+    layui.config({
+        base: "../static/js/modules/",//拓展模块所在目录
+    }).use(['index', 'laymap'], function () {
+        //定义模块名
+        const index = layui.index,
+            laymap = layui.laymap;
+
+        //判断用户是否已登录
+        document.body.onload= function (){
+            //判断用户是否已经登录
+            if (localStorage.getItem("user") == null ||
+                localStorage.getItem("user") == '' ||
+                localStorage.getItem("user") == undefined )   {
+                layer.msg("用户未登录");
+                setTimeout(function (){
+                    window.location.href="/login";
+                },1000);
+                return false;
+            }
+        }
+        //主动触发事件
+        $("body").trigger("onload");
+
+
+        //定义地图对象
+        let map = new laymap.LeafletMap()
+        //初始化地图
+        map.init("map");
+        //添加geojson数据
+        map.addGeoJson(geojson_jiangsu);
+        //注册用户操作事件
+        index.registerEvents(map, "lng", "lat", "zoom_level");
+        //注册左侧菜单点击事件
+        index.registMenuEvents();
+        //初始化图表
+        index.init_Bike_type_chart("bike_type_chart");
+
+        /**
+         * 地图刷新事件注册
+         */
+        $("#refreshLayers_control").on("click",function (){
+            //刷新图层
+            if (map.bikes_layerGroup){
+                map.bikes_layerGroup.remove();
+                map.init_BikePoint();
+            }
+            if (map.stops_layerGroup){
+                map.stops_layerGroup.remove();
+                map.init_StopPlaque();
+            }
+            //刷新echarts图表
+            index.init_Bike_type_chart("bike_type_chart");
+            layer.msg("图层状态已刷新...")
+        })
+    })
+</script>
+</body>
+</html>

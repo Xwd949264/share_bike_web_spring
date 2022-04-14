@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.BikeTypeMapper">
+
+
+    <select id="selectBikeType" resultType="com.example.pojo.BikeType">
+        SELECT id,type,description,price,limits,photo FROM tb_bike_type
+    </select>
+
+    <select id="selectBikeTypeWithCount" resultType="java.util.HashMap">
+        SELECT COUNT(*) as count,tb_bike_type.id,type,description,price,limits,photo
+        FROM tb_bike LEFT OUTER JOIN tb_bike_type ON(tb_bike_type.id=tb_bike.typeid)
+        GROUP BY typeid
+    </select>
+
+    <insert id="insertBikeType">
+        INSERT INTO tb_bike_type(id,type,description,price,limits,photo)
+        VALUES(#{bikeType.id},#{bikeType.type},#{bikeType.description},#{bikeType.price},#{bikeType.limits},#{bikeType.photo})
+    </insert>
+
+    <update id="updateBikeType">
+        UPDATE tb_bike_type
+        <set>
+            <if test="bikeType.description != null and bikeType.description != ''">
+                description=#{bikeType.description},
+            </if>
+            <if test="bikeType.price != null">
+                price=#{bikeType.price}
+            </if>
+            <if test="bikeType.limits != null">
+                limits=#{bikeType.limits}
+            </if>
+            <if test="bikeType.photo != null">
+                photo=#{bikeType.photo}
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
+
+    <select id="selectBikeTypeGroupCount" resultType="java.util.HashMap">
+        SELECT tb_bike_type.id,type as name,description,price,limits,photo,COUNT(*) as value
+        FROM tb_bike_type LEFT JOIN tb_bike ON(tb_bike_type.id=tb_bike.typeid)
+        GROUP BY tb_bike_type.id
+    </select>
+
+</mapper>

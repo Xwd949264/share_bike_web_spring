@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>用户登录</title>
+    <!--引入Layui-->
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <!--引入css样式-->
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/register.css">
+</head>
+<body>
+<!--头部-->
+<header class="layui-header"><p class="header-title">共享单车智能管理系统</p></header>
+<hr/>
+<!--主体部分-->
+<main class="layui-main">
+    <!-- 登录表单-->
+    <div class="layui-form login-from-container">
+        <form class="layui-form login-form-panel" lay-filter="example">
+            <p class="user-admin-tip"><span>Admin-用户注册</span></p>
+            <hr class="login-form-panel-split">
+            <div class="layui-form-item">
+                <label class="layui-form-label">设置用户：</label>
+                <div class="layui-input-block">
+                    <input type="text" id="username" name="username" lay-verify="username" required autocomplete="off" placeholder="请输入用户名"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">输入密码：</label>
+                <div class="layui-input-block">
+                    <input type="password" id="password" name="password" lay-verify="password" placeholder="请输入密码" required autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">确认密码：</label>
+                <div class="layui-input-block">
+                    <input type="password" id="checkPswd" name="checkPswd" lay-verify="checkPswd" placeholder="请再次输入密码" required autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button type="button" class="layui-btn layui-btn-normal" id="LAY-component-form-getval" onclick="layui.onreset()">重新填写</button>
+                    <button type="button" class="layui-btn" lay-submit="submit_form" lay-filter="submit_form">立即注册</button>
+                </div>
+            </div>
+            <p class="to-regoster-tips">尚无账户,<a class="to-regoster-link" href="/login">立即登录?</a></p>
+        </form>
+
+    </div>
+</main>
+<!--底部-->
+<footer class="layui-footer layui-bg-gray">@CopyRight-2022-04-05</footer>
+
+<script src="/js/jquery/jquery-3.6.0.min.js"></script>
+<script src="/layui/layui.js"></script>
+<script src="/js/md5.js"></script>
+<script>
+    layui.use(["form"],function (){
+        var form = layui.form,
+            $=layui.$;
+        form.verify({
+            //验证用户名
+            username: function(value, item){ //value：表单的值、item：表单的DOM对象
+                if(!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)){
+                    return '用户名不能有特殊字符';
+                }
+                if(/(^\_)|(\__)|(\_+$)/.test(value)){
+                    return '用户名首尾不能出现下划线\'_\'';
+                }
+                if(/^\d+\d+\d$/.test(value)){
+                    return '用户名不能全为数字';
+                }
+            },
+            //验证密码
+            password:function (value,item){
+                if (value.length<6){
+                    return "用户密码必须大于6位";
+                }
+                if (value.length>12){
+                    return "用户密码必须小于12位";
+                }
+            },
+            checkPswd:function (value,item){
+                let $ = layui.$;
+                if (value!=$("#password").val()){
+                    return "两次输入密码不一致";
+                }
+                if (value.length<6){
+                    return "用户密码必须大于6位";
+                }
+                if (value.length>12){
+                    return "用户密码必须小于12位";
+                }
+            }
+        })
+        //通过监听lay-filter属性，监听表单提交动作
+        form.on("submit(submit_form)",function (data){
+            //提交数据
+            alert("提交")
+            console.log(data)
+            //获取要被提交的数据
+            let username = data.field.username;
+            let password = data.field.password;
+            let checkPswd = data.field.checkPswd;
+            if (password!=checkPswd){
+                layer.msg("两次输入的密码不一致");
+                return false;
+            }
+            //md5用户信息加密
+            console.log(calcMD5(password));
+            $.ajax(({
+                url:"http://localhost:8011//user/register",
+                method:"POST",
+                data:{
+                    username:username,
+                    password:calcMD5(password),
+                },
+                success:function (result){
+                    if (result){
+                        console.log(result)
+                        switch (result.code){
+                            case -1:{
+                                layer.msg(result.msg);
+                                break;
+                            }
+                            case 0:{
+                                layer.msg(result.msg);
+                                break;
+                            }
+                            case 1:{
+                                layer.msg(result.msg);
+                                break;
+                            }
+                            default:{
+                                layer.msg("系统异常");
+                            }
+                        }
+                    }
+                }
+            }))
+
+        })
+    })
+
+    //取消登录事件-onreset
+    layui.onreset= function(){
+        $("#username").val("")
+        $("#password").val("")
+        $("#checkPswd").val("")
+    }
+
+
+</script>
+
+</body>
+</html>

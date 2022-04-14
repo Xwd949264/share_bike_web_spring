@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>投放单车</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+</head>
+<body>
+<div class="layui-container" style="padding: 15px">
+    <form class="layui-form" lay-filter="addBike_form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">投放点ID</label>
+            <div class="layui-input-inline">
+                <input type="text" name="stopid" id="stopid" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">投放点名</label>
+            <div class="layui-input-inline">
+                <input type="text" name="stopname" id="stopname" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属政区</label>
+            <div class="layui-input-inline">
+                <input type="text" name="cityname" id="cityname" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">可用容量</label>
+            <div class="layui-input-inline">
+                <input type="text" name="capacity" id="capacity" required  lay-verify="required" placeholder="单位：辆" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">单车类型</label>
+            <div class="layui-input-inline">
+                <select name="biketype" id="bike_type_select_options" required lay-verify="required" autocomplete="off">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">投放数量</label>
+            <div class="layui-input-inline">
+                <input type="text" name="addtion" required  lay-verify="required" autocomplete="off" placeholder="单位：辆" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重新填写</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="/layui/layui.js"></script>
+<script>
+    //Demo
+    layui.use('form', function () {
+        var form = layui.form,
+            $=layui.$;
+
+        //加载单车类型
+        $.ajax({
+            url:"http://localhost:8011/biketype/get/all",
+            method:"GET",
+            data:{},
+            success:function (result){
+                if (result&&result.data){
+                    //加载单车类型
+                    for (let i = 0; i < result.data.length; i++) {
+                        $("#bike_type_select_options")
+                            .append('<option value="'+result.data[i].id+'">'+result.data[i].type+'</option>');
+                    }
+                    //更新渲染
+                    form.render();
+                }
+            }
+        })
+
+        //监听提交
+        form.on('submit(formDemo)', function (data) {
+            let formData = data.field;
+            if (!new RegExp("^[0-9]*[1-9][0-9]*$").test(formData.addtion)){
+                layer.msg("'投放数量只能输入正整数'");
+                return  false;
+            }
+            let cityname = formData.cityname;
+            //提取参数
+            let obj={
+                stopid:formData.stopid,//停车点Id
+                typeid:formData.biketype,//单车类型
+                addtion:formData.addtion,//投放单车数量
+                reduce:0,//减少数据量
+                username:localStorage.getItem("user"),//操作人
+            }
+            //提交数据请求
+            $.ajax({
+                url:"http://localhost:8011/stopstore/insert",
+                method:"POST",
+                data:obj,
+                success:function (result){
+                    if (result&&result.code==1){
+                        layer.msg("已成功执行单车投放操作");
+                    }else{
+                        layer.msg("单车投放操作失败,请稍后再试!")
+                    }
+                }
+            })
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

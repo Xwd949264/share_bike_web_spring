@@ -1,0 +1,96 @@
+/*地图height设置*/
+#map{
+    height: 100%;
+}
+
+#bike_type_chart{
+    position: absolute;
+    left: 15px;
+    top: 490px;
+    width: 350px;
+    height: 350px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    z-index: 99999;
+}
+
+
+/*定位图标样式*/
+.location-icon{
+    display:inline-block;
+    padding:5px;
+    position: absolute;
+    top:90px;
+    left:15px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    border-color: black;
+    z-index: 9999;
+    cursor: pointer;
+}
+/*隐藏图层图标*/
+.hideLayer-icon{
+    display:inline-block;
+    padding:5px;
+    position: absolute;
+    top:130px;
+    left:15px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    border-color: black;
+    z-index: 9999;
+    cursor: pointer;
+}
+/*切换图层*/
+.switchLayer-icon{
+    display:inline-block;
+    padding:5px;
+    position: absolute;
+    top:170px;
+    left:15px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    border-color: black;
+    z-index: 9999;
+    cursor: pointer;
+}
+/*还原视图*/
+.resetView-icon{
+    display:inline-block;
+    padding:5px;
+    position: absolute;
+    top:210px;
+    left:15px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    border-color: black;
+    z-index: 9999;
+    cursor: pointer;
+}
+/*刷新图层*/
+.refreshLayers-icon{
+    display:inline-block;
+    padding:5px;
+    position: absolute;
+    top:250px;
+    left:15px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    border-color: black;
+    z-index: 9999;
+    cursor: pointer;
+}
+
+/*.layui-nav{*/
+/*    background-color: #FAFAFA !important;*/
+/*    color: #0C0C0C !important;*/
+/*}*/
+/*.layui-nav-tree .layui-nav-child{*/
+/*    color: #0C0C0C !important;*/
+/*}*/

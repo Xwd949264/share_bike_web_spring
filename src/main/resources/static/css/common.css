@@ -1,0 +1,16 @@
+.layui-header{
+    width: 100%;
+    height: 60px;
+    text-align: center;
+    line-height: 60px;
+    position: fixed;
+    top: 0px;
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+    box-shadow:0 1px 1px 0 rgba(0,0,0,0.2),0 3px 3px 0 rgba(0,0,0,0.19);
+}
+.header-title{
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing:8px;
+}

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.StopMapper">
+
+    <insert id="addStop">
+        INSERT INTO tb_stop(stopno,stopname,builddate,capacity,size,belong,geom)
+        VALUES (
+            #{stop.stopno},
+            #{stop.stopname},
+            #{stop.builddate},
+            #{stop.capacity},
+            #{stop.size},
+            #{stop.belong},
+            st_geomFromText(#{geom})
+        )
+    </insert>
+
+    <sql id="tb_stop_join_fileds">
+        id,stopno,stopname,builddate,capacity,size,belong,ST_ASGEOJSON(tb_stop.geom) as geom,
+        cityid,cityname,ST_ASGEOJSON(tb_city.geom) as city_geom,parentid,ST_ASGEOJSON(centerpoint) as centerpoint
+    </sql>
+
+    <resultMap id="selectStopsByName_Belong_JOIN_Map" type="com.example.pojo.Stop">
+        <result property="id" column="id"/>
+        <result property="stopno" column="stopno"/>
+        <result property="stopname" column="stopname"/>
+        <result property="builddate" column="builddate"/>
+        <result property="capacity" column="capacity"/>
+        <result property="size" column="size"/>
+        <result property="belong" column="belong"/>
+        <result property="geom" column="geom" typeHandler="com.example.typehandler.PolygonTypeHandler"/>
+        <association property="city" javaType="com.example.pojo.City">
+            <result property="cityname" column="cityname"/>
+            <result property="cityid" column="belong"/>
+<!--            <result property="geom" column="city_geom" typeHandler="com.example.typehandler.MultiPolygonTypeHandler"  jdbcType="OTHER"/>-->
+            <result property="parentid" column="parentid"/>
+<!--            <result property="centerpoint" column="centerpoint" typeHandler="com.example.typehandler.PointTypeHandler"/>-->
+
+        </association>
+    </resultMap>
+    <select id="selectStopsByName_Belong" resultMap="selectStopsByName_Belong_JOIN_Map">
+        SELECT <include refid="tb_stop_join_fileds"></include>
+        FROM `tb_stop` LEFT OUTER JOIN `tb_city` ON(tb_stop.belong=tb_city.cityid)
+        <where>
+            <if test="stopname != null and stopname != ''">
+                stopname LIKE concat("%",#{stopname},"%")
+            </if>
+            <if test="belong != null and belong != ''">
+                OR cityname LIKE concat("%",#{belong},"%")
+            </if>
+        </where>
+    </select>
+
+
+
+    <sql id="selectStopsByCityGroup_SQL">COUNT(*) as stopsnum,SUM(capacity) as bikecapacity,belong,tb_city.cityname,SUM(a.bikecount) as bikecount</sql>
+    <resultMap id="selectStopsByCityGroup_Map" type="java.util.HashMap">
+
+    </resultMap>
+
+    <select id="selectStopsByCityGroup" resultType="java.util.HashMap">
+        SELECT <include refid="selectStopsByCityGroup_SQL"></include>
+        FROM tb_stop LEFT OUTER JOIN tb_city ON(tb_stop.belong=tb_city.cityid) LEFT OUTER JOIN (SELECT stopid,COUNT(*) as bikecount FROM tb_bike GROUP BY stopid) a ON(a.stopid=tb_stop.id)
+        GROUP BY belong
+    </select>
+
+    <select id="selectStopsGroupByCity" resultType="java.util.HashMap">
+        SELECT COUNT(*) as value,tb_city.cityname as name
+        FROM tb_stop LEFT OUTER JOIN tb_city ON(tb_stop.belong=tb_city.cityid)
+        GROUP BY belong
+    </select>
+
+
+    <select id="selectBikesGroupByCity" resultType="java.util.HashMap">
+        SELECT SUM(capacity) as value,tb_city.cityname as name
+        FROM tb_stop LEFT OUTER JOIN tb_city ON(tb_stop.belong=tb_city.cityid)
+        GROUP BY belong
+    </select>
+
+
+    <sql id="selectById_SQL">
+            id,stopno,stopname,builddate,capacity,size,belong,ST_ASGEOJSON(tb_stop.geom) as geom,
+            cityid,cityname,ST_ASGEOJSON(tb_city.geom) as city_geom,parentid,ST_ASGEOJSON(centerpoint) as centerpoint
+     </sql>
+    <resultMap id="selectById_Map" type="com.example.pojo.Stop">
+        <result property="id" column="id"/>
+        <result property="stopno" column="stopno"/>
+        <result property="stopname" column="stopname"/>
+        <result property="builddate" column="builddate"/>
+        <result property="capacity" column="capacity"/>
+        <result property="size" column="size"/>
+        <result property="belong" column="belong"/>
+        <result property="geom" column="geom" typeHandler="com.example.typehandler.PolygonTypeHandler"/>
+        <association property="city" javaType="com.example.pojo.City">
+            <result property="cityname" column="cityname"/>
+            <result property="cityid" column="belong"/>
+            <result property="geom" column="city_geom" typeHandler="com.example.typehandler.MultiPolygonTypeHandler"  jdbcType="OTHER"/>
+            <result property="parentid" column="parentid"/>
+            <result property="centerpoint" column="centerpoint" typeHandler="com.example.typehandler.PointTypeHandler"/>
+        </association>
+    </resultMap>
+    <select id="selectById" resultMap="selectById_Map">
+        SELECT <include refid="selectById_SQL"></include>
+        FROM `tb_stop` LEFT OUTER JOIN `tb_city` ON(tb_stop.belong=tb_city.cityid)
+        WHERE id=#{id}
+    </select>
+
+    <update id="updateCapacityAndSizeById">
+        UPDATE tb_stop
+        <set>
+            <if test="stop.capacity != null">
+                capacity = #{stop.capacity},
+            </if>
+            <if test="stop.size != null">
+                size = #{stop.size}
+            </if>
+        </set>
+        <where>
+            id = #{stop.id}
+        </where>
+    </update>
+
+</mapper>

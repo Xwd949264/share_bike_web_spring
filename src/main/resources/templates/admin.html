@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Share_Bike-用户管理</title>
+    <!--引入Layui-->
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <!--引入css样式-->
+    <link rel="stylesheet" href="/ol/ol.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/core-style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <script type="text/javascript" src="/js/jquery/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+<hr/>
+<div class="layui-layout layui-layout-admin">
+    <!--头部-->
+    <header class="layui-header"><p class="header-title">共享单车智能管理系统</p></header>
+    <div class="layui-side">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree layui-tab" lay-filter="menu">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;" style="background-color: #F6F6F6">系统用户管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;" lay-filter="settings">个人信息设置</a></dd>
+                        <dd><a href="javascript:;" lay-filter="pswdModify">用户密码修改</a></dd>
+                        <dd><a href="javascript:;" lay-filter="addBike">单车投放管理</a></dd>
+                    </dl>
+                </li>
+<!--                <li class="layui-nav-item"><a href="javascript:;" lay-filter="locateBike">单车定位查询</a></li>-->
+<!--                <li class="layui-nav-item"><a href="javascript:;" lay-filter="queryBroken">损坏车辆查询</a></li>-->
+<!--                <li class="layui-nav-item"><a href="javascript:;" lay-filter="userManager">系统用户管理</a></li>-->
+            </ul>
+            <li class="layui-nav-item logout-menu">
+                <i class="layui-icon layui-icon-username layui-bg-green" style="font-size: 30px; "></i>
+                <a href="javascript:;" id="btnLogonOut">退出登录</a></li>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <div class="layui-menu-body-title">
+            系统用户管理 / <span class="sub-title">个人信息设置</span>
+        </div>
+        <hr/>
+        <!-- 内容主体区域 -->
+        <div class="layui-tab-content">
+            <!--个人信息-begin-->
+            <div class="layui-tab-item layui-show" id="settings">
+                <div class="settings-content layui-container">
+                    <form class="layui-form settings-form" lay-filter="user-form" action="" style="padding:15px;width: 50%;">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">照片</label>
+                            <div class="layui-input-block">
+                                <img class="user-photo" id="user-photo">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux user-photo-tips">Tips:<a class="input-change-photo">点击此处<input type="file" accept="image/jpeg" multiple="false" id="change-photo"></a>修改照片</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">姓名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="name" required  lay-verify="required" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">Tips:用户姓名</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">年龄</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="age" required lay-verify="required" placeholder="请输入年龄" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">Tips:用户年龄</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">性别</label>
+                            <div class="layui-input-inline">
+                                <input type="radio" name="sex" id="sex-female" value="女" title="女">
+                                <input type="radio" name="sex" id="sex-male" value="男" title="男">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">Tips:用户性别</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">Email</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="email" required lay-verify="required" placeholder="请输入邮箱" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">Tips:用户邮箱</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">Tel</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="tel" required lay-verify="required" placeholder="请输入联系方式" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">Tips:用户手机号</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">地址</label>
+                            <div class="layui-input-block">
+                                <div class="layui-input-inline">
+                                    <input type="text" name="address" required lay-verify="required" placeholder="请输入通讯地址" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">Tips:通讯地址</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">兴趣</label>
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="like[write]" title="写作" checked>
+                                <input type="checkbox" name="like[read]" title="阅读" >
+                                <input type="checkbox" name="like[dai]" title="发呆">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">个签</label>
+                            <div class="layui-input-block">
+                                <textarea name="signature" placeholder="请输入内容" class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-submit lay-filter="settings">保存修改</button>
+                                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="refresh">刷新信息</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!--个人信息-end-->
+            <!--修改密码-begin-->
+            <div class="layui-tab-item" id="pswdModify">
+                <div class="psdw-content layui-container">
+                    <form class="layui-form modify-form" action="">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">当前账户</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="modiusername" id="modi-username" disabled placeholder="Admin" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">新的密码</label>
+                            <div class="layui-input-block">
+                                <input type="password" name="modipassword" required lay-verify="required" placeholder="请输入新密码" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">再次输入</label>
+                            <div class="layui-input-block">
+                                <input type="password" name="modicheckPswd" required lay-verify="required" placeholder="请输入确认新密码" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-submit lay-filter="modify">确认修改</button>
+                                <button type="reset" class="layui-btn layui-btn-primary">取消修改</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!--修改密码-end-->
+            <!--单车管理-begin-->
+            <div class="layui-tab-item" id="addBike">
+                <div class="layui-container">
+                    <div class="layui-row">
+                        <div class="layui-col-md2 left-catalog">
+                            <div id="treemenu" class="demo-tree demo-tree-box"></div>
+                        </div>
+                        <div class="layui-col-md10">
+                            <!--左侧标题信息-->
+                            <div class="layui-menu-body-title">
+                               <span class="title-left">单车类型管理</span> / <span class="sub-title-left">查看类型</span>
+                            </div>
+                            <hr/>
+                            <!--左侧面板信息-->
+                            <div class="layui-tab-content" id="sub-tab-content">
+                                <!--查看单车类型-begin-->
+                                <div class="layui-tab-item layui-show" id="view_type">
+                                    <div class="layui-bg-gray" style="padding: 30px;">
+                                        <div class="layui-row layui-col-space15" id="view_type_content">
+                                            <!-- 填充单车类型内容到此-->
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--查看单车类型-end-->
+                                <!--增加单车类型-begin-->
+                                <div class="layui-tab-item" id="add_type">
+                                    <form class="layui-form" action="" lay-filter="add_bike_type_form" enctype=multipart/form-data style="width: 80%">
+                                        <div class="layui-form-item" id="bike-photo-item">
+                                            <label class="layui-form-label">单车图片</label>
+                                            <div class="layui-input-block">
+                                                <img src="/imgs/unknown.png" id="bike-photo">
+                                            </div>
+                                            <div class="layui-form-mid layui-word-aux bike-photo-tips">Tips:<a class="input-change-bike-photo">点击此处<input type="file" name="bikephoto" accept="image/jpeg" multiple="false" id="change-bike-photo"></a>修改照片</div>
+                                        </div>
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">单车类型</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" name="type" required  lay-verify="required" autocomplete="off" placeholder="请输入新的单车类型" class="layui-input">
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">成本价格</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" name="price" required  lay-verify="required" placeholder="请输入单车的成本单价(单位:元)" autocomplete="off" class="layui-input">
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">使用年限</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" name="limits" required  lay-verify="required" placeholder="请输入单车的使用年限(单位:年)" autocomplete="off" class="layui-input">
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-item layui-form-text">
+                                            <label class="layui-form-label">描述信息</label>
+                                            <div class="layui-input-block">
+                                                <textarea placeholder="请输入单车的描述信息" required  lay-verify="required" class="layui-textarea" autocomplete="off" name="description"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="layui-form-item">
+                                            <div class="layui-input-block">
+                                                <button class="layui-btn layui-btn-normal" id="reset_bikeForm_btn">重新填写</button>
+                                                <button type="submit" class="layui-btn" lay-submit="" lay-filter="add_single_bike_type">立即提交</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <!--增加单车类型-end-->
+                                <!--投放分布-begin-->
+                                <div class="layui-tab-item" id="send_distribute">
+                                    <!--地图容器-->
+                                    <div id="map_container"></div>
+                                    <div id="popup" class="ol-popup">
+                                        <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+                                        <div id="popup-content"></div>
+                                    </div>
+                                    <hr/>
+                                    <!--图表-->
+                                    <div id="chart_table">
+                                        <div class="layui-row">
+                                            <div class="layui-col-md6">
+                                                <div id="stop_group_pie"></div>
+                                            </div>
+                                            <div class="layui-col-md6">
+                                                <div id="bike_group_pie"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--投放分布-end-->
+                                <!--操作日志-begin-->
+                                <div class="layui-tab-item" id="operation_log">
+                                    <!--表格数据-->
+                                    <table class="layui-hide" id="operationLog" lay-filter="operation_log_table"></table>
+                                </div>
+                                <!--操作日志-end-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--单车管理-end-->
+        </div>
+    </div>
+</div>
+<script src="/layui/layui.js"></script>
+<script src="/js/modules/admin.js"></script>
+<script src="/js/modules/layolmap.js"></script>
+<script src="/js/md5.js"></script>
+<script src="/ol/ol.js"></script>
+<script src="/echarts/echarts.js"></script>
+<script src="/js/jangsu.js"></script>
+<script>
+    //导入自定义模块-按需加载
+    layui.config({
+        base:"../static/js/modules/",//拓展模块的目录
+    }).use(['admin','layer','layolmap'],function (){
+        //定义模块名
+        const admin = layui.admin,
+            $=layui.$;
+        //注册导航菜单点击事件
+        admin.registEvents();
+        //绑定事件
+        document.body.onload= function (){
+            //判断用户是否已经登录
+            if (localStorage.getItem("user") == null ||
+                localStorage.getItem("user") == '' ||
+                localStorage.getItem("user") == undefined )   {
+                layer.msg("用户未登录");
+                setTimeout(function (){
+                    window.location.href="login.html";
+                },1000);
+                return false;
+            }
+            admin.getUserInfoByUsername(localStorage.getItem("user"));//初始化用户信息
+        }
+        //主动触发事件
+        $("body").trigger("onload");
+        //初始化地图
+        // const mapInstance =new layolmap.OlMap("map_container",geojson_jiangsu);
+        // mapInstance.map.getView().setCenter([119.00,33.30]);
+        // mapInstance.map.getView().setZoom(24);
+
+    })
+
+</script>
+</body>
+</html>

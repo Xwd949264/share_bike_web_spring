@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>停车区域检索</title>
+    <!--引入Layui-->
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/addstopform.css">
+</head>
+<body>
+<div class="layui-container" style="padding-top: 5px">
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">停车点名</label>
+            <div class="layui-input-block">
+                <input type="text" name="stopname" placeholder="模糊查询:请输入停车点关键词"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属市区</label>
+            <div class="layui-input-block">
+                <select name="belong">
+                    <option value=""></option>
+                    <option value="南京市">南京市</option>
+                    <option value="无锡市">无锡市</option>
+                    <option value="徐州市">徐州市</option>
+                    <option value="常州市">常州市</option>
+                    <option value="苏州市">苏州市</option>
+                    <option value="南通市">南通市</option>
+                    <option value="连云港市">连云港市</option>
+                    <option value="淮安市">淮安市</option>
+                    <option value="盐城市">盐城市</option>
+                    <option value="扬州市">扬州市</option>
+                    <option value="镇江市">镇江市</option>
+                    <option value="泰州市">泰州市</option>
+                    <option value="宿迁市">宿迁市</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="searchClick">立即检索</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置条件</button>
+            </div>
+        </div>
+    </form>
+    <hr>
+    <!--表格数据-->
+    <table class="layui-hide" id="test" lay-filter="test" ></table>
+</div>
+<script type="text/html" id="barOperations">
+    <a class="layui-btn layui-btn-xs" lay-event="locate">定位</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+
+<script src="/layui/layui.js"></script>
+<script src="/leaflet/leaflet.js"></script>
+<script src="/js/stopSearch.js"></script>
+</body>
+</html>

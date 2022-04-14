@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.CityMapper">
+
+    <!-- 查询-->
+    <sql id="selectAll_SQL">
+        cityid,cityname,ST_ASGEOJSON(geom) as geom,parentid,ST_ASGEOJSON(centerpoint) as centerpoint
+    </sql>
+    <resultMap id="selectAll_Map" type="com.example.pojo.City">
+        <id property="cityid" column="cityid"/>
+        <result property="cityname" column="cityname"/>
+        <result property="geom" column="geom" javaType="org.locationtech.jts.geom.MultiPolygon" typeHandler="com.example.typehandler.MultiPolygonTypeHandler"/>
+        <result property="parentid" column="parentid"/>
+        <result property="centerpoint" column="centerpoint" javaType="org.locationtech.jts.geom.Point" typeHandler="com.example.typehandler.PointTypeHandler"/>
+    </resultMap>
+
+    <select id="selectAll" resultType="com.example.pojo.City">
+        SELECT <include refid="selectAll_SQL"></include> FROM `tb_city`
+    </select>
+
+    <select id="selectOneByCityName" resultType="com.example.pojo.City">
+        SELECT <include refid="selectAll_SQL"></include>
+        FROM `tb_city`
+        <where>
+            <if test="cityName != null and cityName !='' ">
+                cityname LIKE concat("%",#{cityName},"%")
+            </if>
+        </where>
+    </select>
+
+</mapper>

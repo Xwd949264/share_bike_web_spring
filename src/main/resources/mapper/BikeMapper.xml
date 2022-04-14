@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.BikeMapper">
+
+    <insert id="insertBike">
+        INSERT INTO tb_bike(typeid,bno,stopid,status,location)
+        VALUES (#{bike.typeid},UUID(),#{bike.stopid},0,#{geom})
+    </insert>
+    
+    <insert id="batchInsertBike">
+        INSERT INTO tb_bike(typeid,bno,stopid,status,location)
+        VALUES 
+            <foreach collection="bikes" item="item" index="index" separator=",">
+                (#{item.typeid},#{item.bno},#{item.stopid},#{item.status},#{item.location})
+            </foreach>
+    </insert>
+
+
+    <sql id="selectBike_Map">
+        tb_bike.id as id,bno,tb_bike.status,startdate,ST_ASGEOJSON(ST_GEOMFROMTEXT(location)) as location,
+        tb_bike_type.type as type,
+        tb_stop.stopname as stopname,
+        tb_bike_status.description as description,
+        tb_city.cityname as cityname
+    </sql>
+    <resultMap id="selectBike_Map" type="com.example.pojo.Bike">
+        <result property="id" column="id"/>
+        <result property="bno" column="bno"/>
+        <result property="status" column="status"/>
+        <result property="startdate" column="startdate"/>
+        <result property="location" column="location"/>
+        <association property="bikeType" javaType="com.example.pojo.BikeType">
+            <result property="type" column="type"/>
+        </association>
+        <association property="bikeStatus" javaType="com.example.pojo.BikeStatus">
+            <result property="description" column="description"/>
+        </association>
+        <association property="stop" javaType="com.example.pojo.Stop">
+            <result property="stopname" column="stopname"/>
+        </association>
+        <association property="city" javaType="com.example.pojo.City">
+            <result property="cityname" column="cityname"/>
+        </association>
+    </resultMap>
+
+    <select id="selectBike" resultMap="selectBike_Map">
+        SELECT <include refid="selectBike_Map"></include>
+        FROM tb_bike LEFT OUTER JOIN tb_bike_type ON(tb_bike.typeid=tb_bike_type.id)
+                     LEFT OUTER JOIN tb_stop ON(tb_bike.stopid=tb_stop.id)
+                     LEFT OUTER JOIN tb_bike_status ON(tb_bike.status=tb_bike_status.status)
+                     LEFT OUTER JOIN tb_city ON(tb_city.cityid=tb_stop.belong)
+        <where>
+            <if test="bno != null and bno != ''">
+                bno = #{bno} AND
+            </if>
+            <if test="belong != null and belong != ''">
+                tb_stop.belong = #{belong}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteBikeByID">
+        DELETE FROM tb_bike WHERE id = #{id}
+    </delete>
+
+</mapper>

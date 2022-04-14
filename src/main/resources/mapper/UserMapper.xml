@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.UserMapper">
+
+    <sql id="user_all_fileds">account,password,name,age,gender,tel,email,address,role,hobby,signature,photo</sql>
+
+
+    <select id="selectUserByUname" resultType="com.example.pojo.User">
+        SELECT <include refid="user_all_fileds"></include>
+        FROM tb_user
+        WHERE account=#{username}
+    </select>
+
+    <select id="selectUserByUnameAndPswd" resultType="com.example.pojo.User">
+        SELECT <include refid="user_all_fileds"></include>
+        FROM tb_user
+        WHERE account=#{username} AND password=#{password}
+    </select>
+
+
+    <insert id="insertUser">
+        INSERT INTO tb_user(account,password) VALUES(#{username},#{password})
+    </insert>
+
+    <update id="updatePhotoByUsername">
+        UPDATE tb_user
+        SET photo = #{photo}
+        WHERE account=#{username}
+    </update>
+
+    <update id="updateUserInfoByUname">
+        UPDATE tb_user
+        <set>
+            <if test="user.password != null and user.password != ''">
+                password = #{user.password},
+            </if>
+            <if test="user.name != null and user.name != ''">
+                name = #{user.name},
+            </if>
+            <if test="user.age != null ">
+                age = #{user.age},
+            </if>
+            <if test="user.gender != null and user.gender != ''">
+                gender = #{user.gender},
+            </if>
+            <if test="user.tel != null and user.tel != ''">
+                tel = #{user.tel},
+            </if>
+            <if test="user.email != null and user.email != ''">
+                email = #{user.email},
+            </if>
+            <if test="user.address != null and user.address != ''">
+                address = #{user.address},
+            </if>
+            <if test="user.role != null ">
+                role = #{user.role},
+            </if>
+            <if test="user.hobby != null and user.hobby != ''">
+                hobby = #{user.hobby},
+            </if>
+            <if test="user.signature != null and user.signature != ''">
+                signature = #{user.signature}
+            </if>
+        </set>
+        <where>
+            account = #{username}
+        </where>
+    </update>
+
+
+</mapper>

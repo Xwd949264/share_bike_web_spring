@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.StopStoreMapper">
+
+    <insert id="addStopStore">
+           INSERT INTO tb_stop_store(stopid,typeid,addtion,reduce,username)
+            VALUES(#{stopStore.stopid},#{stopStore.typeid},#{stopStore.addtion},#{stopStore.reduce},#{username})
+    </insert>
+
+    <sql id="selectAllDeatil_SQL">
+                tb_stop_store.id as ssid,stopid,typeid,addtion,reduce,operationdate,username,
+                tb_stop.id as sid,stopno,stopname,builddate,capacity,size,belong,ST_ASGEOJSON(geom) as geom,
+                tb_bike_type.id as btid,type,description,price,limits,photo
+    </sql>
+    <resultMap id="selectAllDeatil_Map" type="com.example.pojo.StopStore">
+        <result property="id" column="ssid"/>
+        <result property="stopid" column="stopid"/>
+        <result property="typeid" column="typeid"/>
+        <result property="addtion" column="addtion"/>
+        <result property="reduce" column="reduce"/>
+        <result property="operationdate" column="operationdate"/>
+        <result property="username" column="username"/>
+        <association property="stop" javaType="com.example.pojo.Stop">
+            <result property="id" column="sid"/>
+            <result property="stopno" column="stopno"/>
+            <result property="stopname" column="stopname"/>
+            <result property="builddate" column="builddate"/>
+            <result property="capacity" column="capacity"/>
+            <result property="size" column="size"/>
+            <result property="belong" column="belong"/>
+<!--            <result property="geom" column="geom" typeHandler="com.example.typehandler.PolygonTypeHandler"/>-->
+        </association>
+        <association property="bikeType" javaType="com.example.pojo.BikeType">
+            <result property="id" column="btid"/>
+            <result property="type" column="type"/>
+            <result property="description" column="description"/>
+            <result property="price" column="price"/>
+            <result property="limits" column="limits"/>
+<!--            <result property="photo" column="photo"/>-->
+        </association>
+     </resultMap>
+    <select id="selectAllDeatil" resultMap="selectAllDeatil_Map">
+            SELECT <include refid="selectAllDeatil_SQL"></include>
+            FROM tb_stop_store
+                        LEFT OUTER JOIN tb_stop ON(tb_stop_store.stopid=tb_stop.id)
+                        LEFT OUTER JOIN tb_bike_type ON(tb_stop_store.typeid=tb_bike_type.id)
+    </select>
+
+</mapper>

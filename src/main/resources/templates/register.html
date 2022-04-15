@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href="/favicon.ico" rel="icon" type="image/x-icon" />
     <title>用户登录</title>
     <!--引入Layui-->
     <link rel="stylesheet" href="/layui/css/layui.css">
@@ -112,7 +113,7 @@
             //md5用户信息加密
             console.log(calcMD5(password));
             $.ajax(({
-                url:"http://localhost:8011//user/register",
+                url:"http://localhost:8011/user/register",
                 method:"POST",
                 data:{
                     username:username,

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href="/favicon.ico" rel="icon" type="image/x-icon" />
     <title>用户登录</title>
     <!--引入Layui-->
     <link rel="stylesheet" href="/layui/css/layui.css">
@@ -96,7 +97,7 @@
             let password = data.field.password;
             //发起请求
             $.ajax({
-                url:"http://localhost:8011//user/login",
+                url:"user/login",
                 method:"POST",
                 data:{
                     username:username,
